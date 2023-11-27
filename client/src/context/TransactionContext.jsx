@@ -7,28 +7,38 @@ export const TransactionContext = React.createContext()
 const { ethereum } = window
 
 const getEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(ethereum)
-  const signer = provider.getSinger()
-  const transactionContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer,
-  )
+  try {
+    if (!window.ethereum) {
+      console.log('Ethereum provider (ethereum) is undefined.')
+      return
+    }
 
-  console.log({
-    provider,
-    signer,
-    transactionContract,
-  })
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const getSigner = provider.getSigner()
+    const transactionContract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      getSigner,
+    )
+
+    console.log({
+      provider,
+      getSigner,
+      transactionContract,
+    })
+  } catch (error) {
+    console.error('Error in getEthereumContract:', error)
+  }
 }
-
+console.log('contractAddress', contractAddress)
+console.log('contractABI', contractABI)
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState('')
   const [formData, setFormData] = useState({
-    addressTo: '',
-    amount: '',
-    keyword: '',
-    message: '',
+    addressTo: 'test  ',
+    amount: '0.001',
+    keyword: 'test',
+    message: 'test',
   })
 
   const handleChange = (e, name) => {
@@ -72,6 +82,8 @@ export const TransactionProvider = ({ children }) => {
   const sendTransaction = async () => {
     try {
       if (!ethereum) return alert('Please install metamask')
+      // const { addressTo, amount, keyword, message } = formData
+      getEthereumContract()
     } catch (error) {
       console.log(error)
 

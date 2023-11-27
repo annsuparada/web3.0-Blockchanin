@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import { TransactionProvider } from './context/TransactionContext';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <TransactionProvider>
