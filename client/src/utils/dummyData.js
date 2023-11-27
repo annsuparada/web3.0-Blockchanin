@@ -1,5 +1,5 @@
 
-export default [
+const dummyData = [
     {
       id: 1,
       url: "https://metro.co.uk/wp-content/uploads/2015/05/pokemon_crying.gif?quality=90&strip=all&zoom=1&resize=500%2C284",
@@ -55,3 +55,5 @@ export default [
       addressTo: "0x8aa395Ab97837576aF9cd6946C79024ef1acfdbE",
     },
   ];
+
+  export default dummyData
