@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 
 import { TransactionContext } from '../context/TransactionContext'
 
-import useFetch from '../hooks/useFetch'
 import dummyData from '../utils/dummyData'
 import { shortenAddress } from '../utils/shortenAddress'
 
@@ -11,15 +10,11 @@ const TransactionsCard = ({
   addressFrom,
   timestamp,
   message,
-  keyword,
   amount,
-  url,
 }) => {
-  const gifUrl = useFetch({ keyword })
-
   return (
     <div
-      className="bg-[#181918] m-4 flex flex-1
+      className="white-glassmorphism m-4 flex flex-1
         min-w-[270px]
         max-w-[300px]
       flex-col p-3 rounded-md hover:shadow-2xl"
@@ -45,18 +40,12 @@ const TransactionsCard = ({
             </p>
           </a>
           <p className="text-white text-base">Amount: {amount} ETH</p>
-          {message && (
-            <>
-              <br />
-              <p className="text-white text-base">Message: {message}</p>
-            </>
-          )}
+
+          <br />
+          <p className="text-white text-base">
+            Message: {message ? message : '...'}
+          </p>
         </div>
-        <img
-          src={gifUrl || url}
-          alt="nature"
-          className="w-full h-60 rounded-md shadow-lg object-cover"
-        />
         <div className="bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl">
           <p className="text-[#37c7da] font-bold">{timestamp}</p>
         </div>
@@ -66,8 +55,7 @@ const TransactionsCard = ({
 }
 
 const Transactions = () => {
-  //   const { transactions, currentAccount } = useContext(TransactionContext)
-  const { currentAccount } = useContext(TransactionContext)
+  const { transactions, currentAccount } = useContext(TransactionContext)
 
   return (
     <div className="flex w-full justify-center items-center 2xl:px-20 gradient-bg-transactions">
@@ -82,9 +70,8 @@ const Transactions = () => {
           </h3>
         )}
 
-        <div className="flex flex-wrap justify-center items-center mt-10">
-          {/* {[...dummyData, ...transactions].reverse().map((transaction, i) => ( */}
-          {[...dummyData].reverse().map((transaction, i) => (
+        <div className="flex flex-wrap justify-center items-center mt-10 items-stretch">
+          {[...dummyData, ...transactions].reverse().map((transaction, i) => (
             <TransactionsCard key={i} {...transaction} />
           ))}
         </div>
