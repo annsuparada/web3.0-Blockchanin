@@ -21,24 +21,25 @@ const getEthereumContract = () => {
       getSigner,
     )
 
-    console.log({
-      provider,
-      getSigner,
-      transactionContract,
-    })
+    return transactionContract
   } catch (error) {
     console.error('Error in getEthereumContract:', error)
   }
 }
-console.log('contractAddress', contractAddress)
-console.log('contractABI', contractABI)
+
+const getLocalTransactionCount = localStorage.getItem('transactionCount')
+
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState('')
+  const [isLoading, setIsloading] = useState(false)
+  const [transactionCount, setTransactionCount] = useState(
+    getLocalTransactionCount || 0,
+  )
   const [formData, setFormData] = useState({
-    addressTo: 'test  ',
-    amount: '0.001',
-    keyword: 'test',
-    message: 'test',
+    addressTo: '',
+    amount: '',
+    keyword: '',
+    message: '',
   })
 
   const handleChange = (e, name) => {
@@ -82,8 +83,43 @@ export const TransactionProvider = ({ children }) => {
   const sendTransaction = async () => {
     try {
       if (!ethereum) return alert('Please install metamask')
-      // const { addressTo, amount, keyword, message } = formData
-      getEthereumContract()
+      const { addressTo, amount, keyword, message } = formData
+      const transactionContract = getEthereumContract()
+      const parsedAmount = ethers.utils.parseEther(amount)
+
+      // send ethereum
+      await ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: currentAccount,
+            to: addressTo,
+            gas: '0x5208', // HEX = 21000GWEI
+            value: parsedAmount._hex,
+          },
+        ],
+      })
+
+      // add to blockchain
+      const transactionHash = await transactionContract.addToBlockchain(
+        addressTo,
+        parsedAmount,
+        message,
+        keyword,
+      )
+
+      // loading
+      setIsloading(true)
+      console.log(`Loading - ${transactionHash.hash}`)
+
+      // add to blockchain success
+      await transactionHash.wait()
+      setIsloading(false)
+      console.log(`Success - ${transactionHash.hash}`)
+
+      // get transaction count
+      const transactionCount = await transactionContract.getTransactionCount()
+      setTransactionCount(transactionCount.toNumber())
     } catch (error) {
       console.log(error)
 
