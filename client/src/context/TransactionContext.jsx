@@ -80,24 +80,6 @@ export const TransactionProvider = ({ children }) => {
     }
   }
 
-  const checkIfWalletIsConnected = async () => {
-    try {
-      if (!ethereum) return alert('Please install metamask')
-      const accounts = await ethereum.request({ method: 'eth_accounts' })
-
-      if (accounts.length) {
-        setCurrentAccount(accounts[0])
-        getAllTransactions()
-      } else {
-        console.log('No account Found')
-      }
-    } catch (error) {
-      console.log(error)
-
-      throw new Error('No ethereum oject')
-    }
-  }
-
   const checkIfTransactionsExists = async () => {
     try {
       if (ethereum) {
@@ -182,6 +164,24 @@ export const TransactionProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    const checkIfWalletIsConnected = async () => {
+      try {
+        if (!ethereum) return alert('Please install metamask')
+        const accounts = await ethereum.request({ method: 'eth_accounts' })
+
+        if (accounts.length) {
+          setCurrentAccount(accounts[0])
+          getAllTransactions()
+        } else {
+          console.log('No account Found')
+        }
+      } catch (error) {
+        console.log(error)
+
+        throw new Error('No ethereum oject')
+      }
+    }
+
     checkIfWalletIsConnected()
     checkIfTransactionsExists()
   }, [transactionCount])
