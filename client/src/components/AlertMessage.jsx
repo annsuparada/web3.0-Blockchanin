@@ -12,18 +12,21 @@ const AlertMessage = ({ message, isEorror, isSetTimer }) => {
     return () => clearTimeout(timer)
   }, [])
 
-  const borderColor = isEorror ? '#C70000' : '#538C01'
-  const bgColor = isEorror ? '#FD7171' : '#E5FD78'
-  const textColor = isEorror ? '#C70000' : '#538C01'
+  const divErrorStyle =
+    'flex justify-center items-center py-1 rounded border border-[#C70000] bg-[#FD7171]'
+  const divSuccessStyle =
+    'flex justify-center items-center py-1 rounded border border-[#538C01] bg-[#E5FD78]'
+  const textErrorStyle = 'text-[#C70000] p-1 text-sm'
+  const textSuccessStyle = 'text-[#538C01] p-1 text-sm'
 
   const display = isSetTimer ? isVisible : true
   return (
     <>
       {display && (
-        <div
-          className={`flex justify-center items-center py-1 rounded border border-[${borderColor}] bg-[${bgColor}]`}
-        >
-          <p className={`text-[${textColor}] p-1 text-sm`}>{message}</p>
+        <div className={isEorror ? divErrorStyle : divSuccessStyle}>
+          <p className={isEorror ? textErrorStyle : textSuccessStyle}>
+            {message}
+          </p>
         </div>
       )}
     </>
