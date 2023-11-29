@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-const AlertMessage = ({ message, isEorror }) => {
+const AlertMessage = ({ message, isEorror, isSetTimer }) => {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
@@ -16,9 +16,10 @@ const AlertMessage = ({ message, isEorror }) => {
   const bgColor = isEorror ? '#FD7171' : '#E5FD78'
   const textColor = isEorror ? '#C70000' : '#538C01'
 
+  const display = isSetTimer ? isVisible : true
   return (
     <>
-      {isVisible && (
+      {display && (
         <div
           className={`flex justify-center items-center py-1 rounded border border-[${borderColor}] bg-[${bgColor}]`}
         >
@@ -32,10 +33,12 @@ const AlertMessage = ({ message, isEorror }) => {
 AlertMessage.propTypes = {
   message: PropTypes.string.isRequired,
   isError: PropTypes.bool,
+  isSetTimer: PropTypes.bool,
 }
 
 AlertMessage.defaultProps = {
   isError: false,
+  isSetTimer: true,
 }
 
 export default AlertMessage

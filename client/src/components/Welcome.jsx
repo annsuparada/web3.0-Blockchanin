@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { AiFillPlayCircle } from 'react-icons/ai'
 import { SiEthereum } from 'react-icons/si'
 import { BsInfoCircle } from 'react-icons/bs'
@@ -6,7 +6,7 @@ import { BsInfoCircle } from 'react-icons/bs'
 import { TransactionContext } from '../context/TransactionContext'
 import { Loader } from './'
 import { AlertMessage } from './'
-
+import { shortenAddress } from '../utils/shortenAddress'
 const companyCommonStyles =
   'min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white'
 
@@ -32,13 +32,17 @@ const Welcome = () => {
     isSuccess,
     isError,
   } = useContext(TransactionContext)
+  const [isInvalidForm, setIsInvalidForm] = useState(false)
 
   const handleSubmit = (e) => {
-    const { addressTo, amount, keyword, message } = formData
+    const { addressTo, amount, message } = formData
 
-    // if (!addressTo || !amount || !keyword || message) return
-    console.log('handleSubmit')
-    sendTransaction()
+    if (!addressTo || !amount || !message) {
+      setIsInvalidForm(true)
+    } else if (addressTo && amount && message) {
+      setIsInvalidForm(false)
+      sendTransaction()
+    }
   }
 
   return (
@@ -96,7 +100,11 @@ const Welcome = () => {
                 <BsInfoCircle fontSize={17} color="#fff" />
               </div>
               <div>
-                <p className="text-white font-light text-sm">Address</p>
+                <p className="text-white font-light text-sm">
+                  {currentAccount.length
+                    ? shortenAddress(currentAccount)
+                    : 'Address'}
+                </p>
                 <p className="text-white font-semibold text-lg mt-1">
                   Ethereum
                 </p>
@@ -109,18 +117,21 @@ const Welcome = () => {
               name="addressTo"
               type="text"
               handleChange={handleChange}
+              required
             />
             <Input
               placeholder="Amount (ETH)"
               name="amount"
               type="number"
               handleChange={handleChange}
+              required
             />
             <Input
               placeholder="Enter Message"
               name="message"
               type="text"
               handleChange={handleChange}
+              required
             />
 
             <div className="h-[1px] w-full bg-gray-400 my-2" />
@@ -133,7 +144,13 @@ const Welcome = () => {
                 {isError && (
                   <AlertMessage message="Transaction Failed!" isEorror={true} />
                 )}
-
+                {isInvalidForm && (
+                  <AlertMessage
+                    message="Address To, Amount (EHT) and Message are required"
+                    isEorror={true}
+                    isSetTimer={false}
+                  />
+                )}
                 <button
                   type="button"
                   onClick={handleSubmit}
