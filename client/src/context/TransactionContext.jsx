@@ -32,6 +32,8 @@ const getLocalTransactionCount = localStorage.getItem('transactionCount')
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState('')
   const [isLoading, setIsloading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [isError, setIsError] = useState(false)
   const [transactions, setTransactions] = useState([])
   const [transactionCount, setTransactionCount] = useState(
     getLocalTransactionCount || 0,
@@ -96,6 +98,21 @@ export const TransactionProvider = ({ children }) => {
     }
   }
 
+  const checkIfTransactionsExists = async () => {
+    try {
+      if (ethereum) {
+        const transactionsContract = getEthereumContract()
+        const currentTransactionCount = await transactionsContract.getTransactionCount()
+
+        window.localStorage.setItem('transactionCount', currentTransactionCount)
+      }
+    } catch (error) {
+      console.log(error)
+
+      throw new Error('No ethereum object')
+    }
+  }
+
   const connectWallet = async () => {
     try {
       if (!ethereum) return alert('Please install metamask')
@@ -145,11 +162,14 @@ export const TransactionProvider = ({ children }) => {
 
       // loading
       setIsloading(true)
+      setIsSuccess(false)
+      setIsError(false)
       console.log(`Loading - ${transactionHash.hash}`)
 
       // add to blockchain success
       await transactionHash.wait()
       setIsloading(false)
+      setIsSuccess(true)
       console.log(`Success - ${transactionHash.hash}`)
 
       // get transaction count
@@ -157,14 +177,14 @@ export const TransactionProvider = ({ children }) => {
       setTransactionCount(transactionCount.toNumber())
     } catch (error) {
       console.log(error)
-
-      throw new Error(error.message)
+      setIsError(true)
     }
   }
 
   useEffect(() => {
     checkIfWalletIsConnected()
-  }, [])
+    checkIfTransactionsExists()
+  }, [transactionCount])
 
   return (
     <TransactionContext.Provider
@@ -176,6 +196,8 @@ export const TransactionProvider = ({ children }) => {
         handleChange,
         transactions,
         isLoading,
+        isSuccess,
+        isError,
         transactionCount,
       }}
     >

@@ -5,6 +5,7 @@ import { BsInfoCircle } from 'react-icons/bs'
 
 import { TransactionContext } from '../context/TransactionContext'
 import { Loader } from './'
+import { AlertMessage } from './'
 
 const companyCommonStyles =
   'min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white'
@@ -27,6 +28,9 @@ const Welcome = () => {
     formData,
     sendTransaction,
     handleChange,
+    isLoading,
+    isSuccess,
+    isError,
   } = useContext(TransactionContext)
 
   const handleSubmit = (e) => {
@@ -113,12 +117,6 @@ const Welcome = () => {
               handleChange={handleChange}
             />
             <Input
-              placeholder="Keyword (Gif)"
-              name="keyword"
-              type="text"
-              handleChange={handleChange}
-            />
-            <Input
               placeholder="Enter Message"
               name="message"
               type="text"
@@ -127,16 +125,23 @@ const Welcome = () => {
 
             <div className="h-[1px] w-full bg-gray-400 my-2" />
 
-            {false ? (
-              <Loader />
+            {isLoading ? (
+              <Loader message="It's going to take 1 - 3 minutes" />
             ) : (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer"
-              >
-                Send now
-              </button>
+              <>
+                {isSuccess && <AlertMessage message="Transaction Complete!" />}
+                {isError && (
+                  <AlertMessage message="Transaction Failed!" isEorror={true} />
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer"
+                >
+                  Send now
+                </button>
+              </>
             )}
           </div>
         </div>
